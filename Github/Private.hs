@@ -33,6 +33,18 @@ githubGet' auth paths =
             auth
             (Nothing :: Maybe Value)
 
+githubPut :: GithubAuth -> [String] -> IO ()
+githubPut auth paths = do
+  x <- githubAPI (BS.pack "PUT")
+                 (buildUrl paths)
+                 (Just auth)
+                 (Nothing :: Maybe Value)
+  forceType x
+  return ()
+  where
+    forceType :: Either Error () -> IO ()
+    forceType _ = return ()
+
 githubGetWithQueryString :: (FromJSON b, Show b) => [String] -> String -> IO (Either Error b)
 githubGetWithQueryString = githubGetWithQueryString' Nothing
 
@@ -58,7 +70,7 @@ githubPatch auth paths body =
             (Just body)
 
 buildUrl :: [String] -> String
-buildUrl paths = "https://api.github.com/" ++ intercalate "/" paths
+buildUrl paths = "https://github.iu.edu/api/v3/" ++ intercalate "/" paths
 
 githubAPI :: (ToJSON a, Show a, FromJSON b, Show b) => BS.ByteString -> String
           -> Maybe GithubAuth -> Maybe a -> IO (Either Error b)
